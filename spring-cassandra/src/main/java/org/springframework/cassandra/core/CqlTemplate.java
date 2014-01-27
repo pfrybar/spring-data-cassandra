@@ -278,6 +278,7 @@ public class CqlTemplate extends CassandraAccessor implements CqlOperations {
 		process(doExecute(cql, options), rch);
 	}
 
+	@Override
 	public void query(String cql, RowCallbackHandler rch) throws DataAccessException {
 		query(cql, rch, null);
 	}
@@ -287,26 +288,32 @@ public class CqlTemplate extends CassandraAccessor implements CqlOperations {
 		return process(doExecute(cql, options), rowMapper);
 	}
 
+	@Override
 	public <T> List<T> query(String cql, RowMapper<T> rowMapper) throws DataAccessException {
 		return query(cql, rowMapper, null);
 	}
 
+	@Override
 	public List<Map<String, Object>> queryForListOfMap(String cql) throws DataAccessException {
 		return processListOfMap(doExecute(cql, null));
 	}
 
+	@Override
 	public <T> List<T> queryForList(String cql, Class<T> elementType) throws DataAccessException {
 		return processList(doExecute(cql, null), elementType);
 	}
 
+	@Override
 	public Map<String, Object> queryForMap(String cql) throws DataAccessException {
 		return processMap(doExecute(cql, null));
 	}
 
+	@Override
 	public <T> T queryForObject(String cql, Class<T> requiredType) throws DataAccessException {
 		return processOne(doExecute(cql, null), requiredType);
 	}
 
+	@Override
 	public <T> T queryForObject(String cql, RowMapper<T> rowMapper) throws DataAccessException {
 		return processOne(doExecute(cql, null), rowMapper);
 	}
@@ -641,13 +648,13 @@ public class CqlTemplate extends CassandraAccessor implements CqlOperations {
 		addPreparedStatementOptions(preparedStatement, options);
 
 		while (rowIterator.hasNext()) {
-			getSession().execute(preparedStatement.bind(rowIterator.next()));
+			ResultSetFuture rsf = getSession().executeAsync(preparedStatement.bind(rowIterator.next()));
 		}
 	}
 
 	@Override
 	public void ingest(String cql, RowIterator rowIterator) {
-		ingest(cql, rowIterator, null);
+		ingest(cql, rowIterator, new QueryOptions());
 	}
 
 	@Override
@@ -766,6 +773,7 @@ public class CqlTemplate extends CassandraAccessor implements CqlOperations {
 		logger.debug("Executing prepared CQL query");
 
 		return execute(psc, new PreparedStatementCallback<T>() {
+			@Override
 			public T doInPreparedStatement(PreparedStatement ps) throws DriverException {
 				ResultSet rs = null;
 				BoundStatement bs = null;
@@ -794,6 +802,7 @@ public class CqlTemplate extends CassandraAccessor implements CqlOperations {
 		logger.debug("Executing prepared CQL query");
 
 		execute(psc, new PreparedStatementCallback<Object>() {
+			@Override
 			public Object doInPreparedStatement(PreparedStatement ps) throws DriverException {
 				ResultSet rs = null;
 				BoundStatement bs = null;
@@ -822,6 +831,7 @@ public class CqlTemplate extends CassandraAccessor implements CqlOperations {
 		logger.debug("Executing prepared CQL query");
 
 		return execute(psc, new PreparedStatementCallback<List<T>>() {
+			@Override
 			public List<T> doInPreparedStatement(PreparedStatement ps) throws DriverException {
 				ResultSet rs = null;
 				BoundStatement bs = null;
@@ -841,6 +851,43 @@ public class CqlTemplate extends CassandraAccessor implements CqlOperations {
 	public <T> List<T> query(PreparedStatementCreator psc, PreparedStatementBinder psb, RowMapper<T> rowMapper)
 			throws DataAccessException {
 		return query(psc, psb, rowMapper, null);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.springframework.cassandra.core.CqlOperations#ingest(java.lang.String, org.springframework.cassandra.core.RowIterator, org.springframework.cassandra.core.AsynchronousQueryListener)
+	 */
+	@Override
+	public void ingest(String cql, RowIterator rowIterator, AsynchronousQueryListener listener) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/* (non-Javadoc)
+	 * @see org.springframework.cassandra.core.CqlOperations#ingest(java.lang.String, org.springframework.cassandra.core.RowIterator, org.springframework.cassandra.core.AsynchronousQueryListener, java.util.concurrent.Executor)
+	 */
+	@Override
+	public void ingest(String cql, RowIterator rowIterator, AsynchronousQueryListener listener, Executor executor) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/* (non-Javadoc)
+	 * @see org.springframework.cassandra.core.CqlOperations#ingest(java.lang.String, org.springframework.cassandra.core.RowIterator, org.springframework.cassandra.core.AsynchronousQueryListener, org.springframework.cassandra.core.QueryOptions)
+	 */
+	@Override
+	public void ingest(String cql, RowIterator rowIterator, AsynchronousQueryListener listener, QueryOptions options) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/* (non-Javadoc)
+	 * @see org.springframework.cassandra.core.CqlOperations#ingest(java.lang.String, org.springframework.cassandra.core.RowIterator, org.springframework.cassandra.core.AsynchronousQueryListener, org.springframework.cassandra.core.QueryOptions, java.util.concurrent.Executor)
+	 */
+	@Override
+	public void ingest(String cql, RowIterator rowIterator, AsynchronousQueryListener listener, QueryOptions options,
+			Executor executor) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

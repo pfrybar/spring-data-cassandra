@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 the original author or authors.
+ * Copyright 2011-2014 the original author or authors.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,10 @@ public interface CqlOperations {
 	void executeAsynchronously(String cql) throws DataAccessException;
 
 	/**
-	 * Executes the provided CQL Query, and extracts the results with the ResultSetExtractor. This uses default Query
-	 * Options when extracting the ResultSet.
+	 * Executes the provided CQL Query, and extracts the results with the ResultSetExtractor. The ResultSetExtractor waits
+	 * for timeout and timeunit periods for the result of the asynchronous query. This uses default Query Options when
+	 * extracting the ResultSet.
+	 * 
 	 * 
 	 * @param cql The Query
 	 * @param rse The implementation for extracting the ResultSet
@@ -71,7 +73,8 @@ public interface CqlOperations {
 	<T> T queryAsynchronously(String cql, ResultSetExtractor<T> rse, Long timeout, TimeUnit timeUnit);
 
 	/**
-	 * Executes the provided CQL Query, and extracts the results with the ResultSetExtractor.
+	 * Executes the provided CQL Query, and extracts the results with the ResultSetExtractor. The ResultSetExtractor waits
+	 * for timeout and timeunit periods for the result of the asynchronous query.
 	 * 
 	 * @param cql The Query
 	 * @param rse The implementation for extracting the ResultSet
@@ -675,6 +678,51 @@ public interface CqlOperations {
 	 * 
 	 * @param cql The CQL
 	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
+	 */
+	void ingest(String cql, RowIterator rowIterator);
+
+	/**
+	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
+	 * all row values are bound to the single PreparedStatement and executed against the Session.
+	 * 
+	 * <p>
+	 * This is used internally by the other ingest() methods, but can be used if you want to write your own RowIterator.
+	 * The Object[] length returned by the next() implementation must match the number of bind variables in the CQL.
+	 * </p>
+	 * 
+	 * @param cql The CQL
+	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
+	 * @param listener The Listener to call once the async query is completed.
+	 */
+	void ingest(String cql, RowIterator rowIterator, AsynchronousQueryListener listener);
+
+	/**
+	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
+	 * all row values are bound to the single PreparedStatement and executed against the Session.
+	 * 
+	 * <p>
+	 * This is used internally by the other ingest() methods, but can be used if you want to write your own RowIterator.
+	 * The Object[] length returned by the next() implementation must match the number of bind variables in the CQL.
+	 * </p>
+	 * 
+	 * @param cql The CQL
+	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
+	 * @param listener The Listener to call once the async query is completed.
+	 * @param executor To run the Runnable Listener
+	 */
+	void ingest(String cql, RowIterator rowIterator, AsynchronousQueryListener listener, Executor executor);
+
+	/**
+	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
+	 * all row values are bound to the single PreparedStatement and executed against the Session.
+	 * 
+	 * <p>
+	 * This is used internally by the other ingest() methods, but can be used if you want to write your own RowIterator.
+	 * The Object[] length returned by the next() implementation must match the number of bind variables in the CQL.
+	 * </p>
+	 * 
+	 * @param cql The CQL
+	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
 	 * @param options The Query Options Object
 	 */
 	void ingest(String cql, RowIterator rowIterator, QueryOptions options);
@@ -690,8 +738,28 @@ public interface CqlOperations {
 	 * 
 	 * @param cql The CQL
 	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
+	 * @param listener The Listener to call once the async query is copmpleted.
+	 * @param options The Query Options Object
 	 */
-	void ingest(String cql, RowIterator rowIterator);
+	void ingest(String cql, RowIterator rowIterator, AsynchronousQueryListener listener, QueryOptions options);
+
+	/**
+	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
+	 * all row values are bound to the single PreparedStatement and executed against the Session.
+	 * 
+	 * <p>
+	 * This is used internally by the other ingest() methods, but can be used if you want to write your own RowIterator.
+	 * The Object[] length returned by the next() implementation must match the number of bind variables in the CQL.
+	 * </p>
+	 * 
+	 * @param cql The CQL
+	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
+	 * @param listener The Listener to call once the async query is copmpleted.
+	 * @param options The Query Options Object
+	 * @param executor To run the Runnable Listener
+	 */
+	void ingest(String cql, RowIterator rowIterator, AsynchronousQueryListener listener, QueryOptions options,
+			Executor executor);
 
 	/**
 	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
