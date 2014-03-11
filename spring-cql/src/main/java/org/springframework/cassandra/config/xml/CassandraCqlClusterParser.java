@@ -275,9 +275,9 @@ public class CassandraCqlClusterParser extends AbstractBeanDefinitionParser {
 
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(SocketOptionsFactoryBean.class);
 
-		addOptionalPropertyValue(builder, "connectTimeoutMillis", element, "connect-timeout-mls", null);
+		addOptionalPropertyValue(builder, "connectTimeoutMillis", element, "connect-timeout-millis", null);
 		addOptionalPropertyValue(builder, "keepAlive", element, "keep-alive", null);
-		addOptionalPropertyValue(builder, "readTimeoutMillis", element, "read-timeout-mls", null);
+		addOptionalPropertyValue(builder, "readTimeoutMillis", element, "read-timeout-millis", null);
 		addOptionalPropertyValue(builder, "reuseAddress", element, "reuse-address", null);
 		addOptionalPropertyValue(builder, "soLinger", element, "so-linger", null);
 		addOptionalPropertyValue(builder, "tcpNoDelay", element, "tcp-no-delay", null);
